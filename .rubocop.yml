@@ -1,0 +1,33 @@
+Documentation:
+  Enabled: false
+
+LineLength:
+  Max: 100
+
+Metrics/AbcSize:
+  Max: 20
+
+MethodLength:
+  CountComments: false
+  Max: 15
+
+BlockLength:
+  CountComments: false
+  Max: 30
+
+ClassLength:
+  CountComments: false
+  Max: 100
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+AllCops:
+  Exclude:
+    - spec/**/*
+    - db/**/*
+    - config/**/*
+    - bin/**/*
+
+Style/ClassAndModuleChildren:
+  Enabled: false
