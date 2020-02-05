@@ -29,4 +29,16 @@ RSpec.describe Event, type: :model do
     event.valid?
     expect(event.errors[:start_time]).to include("can't be blank")
   end
+
+  it 'is invalid with a ticket start time after event start time or ticket end time' do
+    event = build(:event, ticket_start_time: Time.now + 2.month)
+    event.valid?
+    expect(event.errors[:ticket_end_time]).to include("can't be before ticket_start_time")
+  end
+
+  it 'is invalid with a ticket end time after event start time' do
+    event = build(:event, ticket_end_time: Time.now + 2.month)
+    event.valid?
+    expect(event.errors[:start_time]).to include("can't be before ticket_end_time")
+  end
 end
