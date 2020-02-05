@@ -26,6 +26,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # gem 'rack-cors'
 
 gem 'active_model_serializers'
+gem 'ransack'
 
 group :development, :test do
   gem 'awesome_print'
@@ -47,6 +48,7 @@ group :test do
   gem 'database_cleaner'
   gem 'ffaker'
   gem 'json_matchers'
+  gem 'rails-controller-testing'
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
