@@ -5,6 +5,7 @@ RSpec.describe "Ticekts", type: :request do
   let(:valid_attributes) do
     { quantity: 7, event: event }
   end
+  let(:token) { 'abc' }
 
   let(:invalid_attributes) do
     { quantity: -5 }
@@ -41,25 +42,53 @@ RSpec.describe "Ticekts", type: :request do
   end
 
   describe "POST /events/:id/tickets" do
-    context "with valid params" do
-      it "creates a new ticket" do
-        expect {
-          post url, params: {ticket: valid_attributes}
-        }.to change(Ticket, :count).by(1)
+    context 'with valid payment token' do
+      context "with valid params" do
+        it "creates a new ticket" do
+          expect {
+            post url, params: {ticket: valid_attributes, token: token}
+          }.to change(Ticket, :count).by(1)
+        end
+
+        it "renders a JSON response with the new ticket and response :created" do
+          post url, params: {ticket: valid_attributes, token: token}
+          expect(response).to have_http_status(:created)
+          expect(assigns(:ticket)).to eq(Ticket.last)
+        end
       end
 
-      it "renders a JSON response with the new ticket and response :created" do
-        post url, params: {ticket: valid_attributes}
-        expect(response).to have_http_status(:created)
-        expect(assigns(:ticket)).to eq(Ticket.last)
+      context "with invalid params" do
+        it "renders a JSON response with errors for the new ticket" do
+          post url, params: {ticket: invalid_attributes, token: token}
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(JSON.parse(response.body)['quantity']).to include('must be greater than 0')
+        end
+      end
+
+      context 'with greater quantity than available' do
+        it 'renders a JSON response with error' do
+          post url, params: {ticket: { quantity: 105, event: event }, token: token}
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(JSON.parse(response.body)['quantity']).to include('must be less than or equal to 100')
+        end
       end
     end
 
-    context "with invalid params" do
-      it "renders a JSON response with errors for the new ticket" do
-        post url, params: {ticket: invalid_attributes}
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(JSON.parse(response.body)['quantity']).to include('must be greater than 0')
+    context 'with invalid payment token' do
+      context 'with card_error' do
+        it "renders a JSON response with card error" do
+          post url, params: {ticket: valid_attributes, token: 'card_error'}
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to eq('Your card has been declined.')
+        end
+      end
+
+      context 'with payment_error' do
+        it "renders a JSON response with payment error" do
+          post url, params: {ticket: valid_attributes, token: 'payment_error'}
+          expect(response).to have_http_status(:unprocessable_entity)
+          expect(response.body).to eq('Something went wrong with your transaction.')
+        end
       end
     end
   end
