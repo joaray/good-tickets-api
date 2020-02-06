@@ -1,21 +1,24 @@
 class TicketsController < ApplicationController
-  before_action :set_ticket, only: :show
+  before_action :authenticate_user!
   before_action :set_event
 
   def index
-    @tickets = @event.tickets
+    @tickets = current_user == @event.organizer ? @event.tickets : current_user.tickets
 
     render json: @tickets
   end
 
   def show
-    render json: @ticket
+    @ticket = Ticket.find(params[:id])
+    render json: @ticket if current_user == (@ticket.customer || @event.organizer)
   end
 
   def create
     @ticket = @event.tickets.new(check_params)
+    @ticket.customer = current_user
     begin
       amount = @event.ticket_price * @ticket.quantity
+
       Adapters::Payment::Gateway.charge(amount: amount, token: params[:token])
       if @ticket.save
         render json: @ticket, status: :created
@@ -28,10 +31,6 @@ class TicketsController < ApplicationController
   end
 
   private
-
-  def set_ticket
-    @ticket = Ticket.find(params[:id])
-  end
 
   def set_event
     @event = Event.find(params[:event_id])

@@ -4,6 +4,7 @@ class Ticket < ApplicationRecord
                                        less_than_or_equal_to: :event_available_ticket_quantity }
 
   belongs_to :event
+  belongs_to :customer, class_name: :User, foreign_key: :customer_id
 
   after_save :update_sold_ticket_quantity
 

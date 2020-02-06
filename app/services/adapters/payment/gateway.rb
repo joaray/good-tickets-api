@@ -5,9 +5,12 @@ module Adapters
     class Gateway
       CardError = Class.new(StandardError)
       PaymentError = Class.new(StandardError)
+      TokenError = Class.new(StandardError)
       Result = Struct.new(:amount, :currency)
       class << self
         def charge(amount:, token:, currency: 'EUR')
+          raise TokenError, 'Something went wrong, token was empty.' unless token
+
           case token.to_sym
           when :card_error
             raise CardError, 'Your card has been declined.'

@@ -1,5 +1,6 @@
 FactoryBot.define do
   factory :event do
+    organizer { create(:user) }
     sequence(:name)     { |n| "event#{n}" }
     category            { 'concert' }
     place               { FFaker::Address.city }
