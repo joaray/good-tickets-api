@@ -40,6 +40,9 @@ class EventsController < ApplicationController
   end
 
   def check_params
-    params.require(:event).permit(:name, :category, :place, :start_time)
+    params.require(:event).permit(
+      :name, :category, :place, :start_time, :ticket_price,
+      :max_ticket_quantity, :ticket_start_time, :ticket_end_time
+    )
   end
 end
