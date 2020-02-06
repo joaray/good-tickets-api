@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_02_05_212745) do
+ActiveRecord::Schema.define(version: 2020_02_05_223343) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -27,6 +27,12 @@ ActiveRecord::Schema.define(version: 2020_02_05_212745) do
     t.integer "sold_ticket_quantity", default: 0, null: false
     t.datetime "ticket_start_time"
     t.datetime "ticket_end_time"
+  end
+
+  create_table "tickets", force: :cascade do |t|
+    t.bigint "event_id", null: false
+    t.integer "quantity", null: false
+    t.index ["event_id"], name: "index_tickets_on_event_id"
   end
 
 end

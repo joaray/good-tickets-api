@@ -41,4 +41,52 @@ RSpec.describe Event, type: :model do
     event.valid?
     expect(event.errors[:start_time]).to include("can't be before ticket_end_time")
   end
+
+  it 'is invalid without a ticket price' do
+    event = build(:event, ticket_price: nil)
+    event.valid?
+    expect(event.errors[:ticket_price]).to include("can't be blank")
+  end
+
+  it 'is invalid with a ticket price less than 0' do
+    event = build(:event, ticket_price: -5)
+    event.valid?
+    expect(event.errors[:ticket_price]).to include('must be greater than or equal to 0')
+  end
+
+  it 'is invalid with a ticket price greater than 100_000_000' do
+    event = build(:event, ticket_price: 100_000_001)
+    event.valid?
+    expect(event.errors[:ticket_price]).to include('must be less than or equal to 100000000')
+  end
+
+  it 'is invalid without a max ticket quantity' do
+    event = build(:event, max_ticket_quantity: nil)
+    event.valid?
+    expect(event.errors[:max_ticket_quantity]).to include("can't be blank")
+  end
+
+  it 'is invalid with a max ticket quantity less than 0' do
+    event = build(:event, max_ticket_quantity: -5)
+    event.valid?
+    expect(event.errors[:max_ticket_quantity]).to include('must be greater than or equal to 0')
+  end
+
+  it 'is invalid with a max ticket quantity less than sold ticket quantity' do
+    event = build(:event, sold_ticket_quantity: 105)
+    event.valid?
+    expect(event.errors[:max_ticket_quantity]).to include('must be greater than or equal to 105')
+  end
+
+  it 'is invalid without a sold ticket quantity' do
+    event = build(:event, sold_ticket_quantity: nil)
+    event.valid?
+    expect(event.errors[:sold_ticket_quantity]).to include("can't be blank")
+  end
+
+  it 'is invalid with a sold ticket quantity less than 0' do
+    event = build(:event, sold_ticket_quantity: -5)
+    event.valid?
+    expect(event.errors[:sold_ticket_quantity]).to include('must be greater than or equal to 0')
+  end
 end

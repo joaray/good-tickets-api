@@ -6,4 +6,18 @@ class Event < ApplicationRecord
     less_than_or_equal_to: 100_000_000
   }
   validates :ticket_end_time, after_date: :ticket_start_time
+  validates :max_ticket_quantity, :sold_ticket_quantity,
+            presence: true, numericality: { greater_than_or_equal_to: 0 }
+  validates :max_ticket_quantity,
+            numericality: { greater_than_or_equal_to: :sold_ticket_quantity_or_zero }
+
+  has_many :tickets
+
+  def available_ticket_quantity
+    max_ticket_quantity - sold_ticket_quantity
+  end
+
+  def sold_ticket_quantity_or_zero
+    sold_ticket_quantity || 0
+  end
 end
