@@ -1,5 +1,5 @@
 class TicketsController < ApplicationController
-  before_action :set_ticket, only: %i[show update destroy]
+  before_action :set_ticket, only: :show
   before_action :set_event
 
   def index
@@ -14,11 +14,16 @@ class TicketsController < ApplicationController
 
   def create
     @ticket = @event.tickets.new(check_params)
-
-    if @ticket.save
-      render json: @ticket, status: :created
-    else
-      render json: @ticket.errors, status: :unprocessable_entity
+    begin
+      amount = @event.ticket_price * @ticket.quantity
+      Adapters::Payment::Gateway.charge(amount: amount, token: params[:token])
+      if @ticket.save
+        render json: @ticket, status: :created
+      else
+        render json: @ticket.errors, status: :unprocessable_entity
+      end
+    rescue StandardError => e
+      render json: e.message, status: :unprocessable_entity
     end
   end
 
