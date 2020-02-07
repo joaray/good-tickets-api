@@ -14,19 +14,18 @@ class TicketsController < ApplicationController
   end
 
   def create
+    throw :alert unless @event.tickets_active?
+
     @ticket = @event.tickets.new(check_params)
     @ticket.customer = current_user
-    begin
-      amount = @event.ticket_price * @ticket.quantity
 
-      Adapters::Payment::Gateway.charge(amount: amount, token: params[:token])
-      if @ticket.save
-        render json: @ticket, status: :created
-      else
-        render json: @ticket.errors, status: :unprocessable_entity
-      end
-    rescue StandardError => e
-      render json: e.message, status: :unprocessable_entity
+    amount = @event.ticket_price * @ticket.quantity
+
+    Adapters::Payment::Gateway.charge(amount: amount, token: params[:token])
+    if @ticket.save
+      render json: @ticket, status: :created
+    else
+      render json: @ticket.errors, status: :unprocessable_entity
     end
   end
 

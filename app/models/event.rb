@@ -38,4 +38,16 @@ class Event < ApplicationRecord
   def prevent_update
     throw(:abort) unless (changed & PROTECTED_ATTRIBUTES).empty?
   end
+
+  def tickets_started?
+    ticket_start_time && ticket_start_time <= Time.now
+  end
+
+  def tickets_ended?
+    ticket_end_time && ticket_end_time <= Time.now
+  end
+
+  def tickets_active?
+    tickets_started? && !tickets_ended? && max_ticket_quantity.positive?
+  end
 end
