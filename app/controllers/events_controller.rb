@@ -31,7 +31,10 @@ class EventsController < ApplicationController
   end
 
   def destroy
-    @event.destroy if authorized_user?
+    return unless authorized_user?
+
+    error = "Future event with sold tickets can't be destroyed"
+    render json: error, status: :unprocessable_entity unless @event.destroy
   end
 
   private
