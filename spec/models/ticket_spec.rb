@@ -21,7 +21,7 @@ RSpec.describe Ticket, type: :model do
   it 'is invalid with a quantity more than event_available_ticket_quantity' do
     ticket = build(:ticket, quantity: 200)
     ticket.valid?
-    expect(ticket.errors[:quantity]).to include('must be less than or equal to 100')
+    expect(ticket.errors[:quantity]).to include('must be less than or equal to 80')
   end
 
   it 'updates sold ticket quantity after save' do

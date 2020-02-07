@@ -70,7 +70,7 @@ RSpec.describe "Ticekts", type: :request do
         it 'renders a JSON response with error' do
           post url, params: {ticket: { quantity: 105, event: event }, token: token}, headers: auth_headers(customer)
           expect(response).to have_http_status(:unprocessable_entity)
-          expect(JSON.parse(response.body)['quantity']).to include('must be less than or equal to 100')
+          expect(JSON.parse(response.body)['quantity']).to include('must be less than or equal to 80')
         end
       end
     end

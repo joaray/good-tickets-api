@@ -84,34 +84,60 @@ RSpec.describe "Events", type: :request do
     end
 
     describe "PUT /events/:id" do
-      context "with valid params" do
-        let(:new_attributes) do
-          { name: 'VERY Big concert' }
+      context 'with inactive event' do
+        context "with valid params" do
+          let(:new_attributes) do
+            { name: 'VERY Big concert' }
+          end
+
+          it "renders a JSON response with the updated event" do
+            put "#{url}/#{event.id}", params: { event: new_attributes }, headers: auth_headers(organizer)
+            event.reload
+            expect(response).to be_successful
+            expect(assigns(:event)).to eq(event)
+          end
         end
 
-        it "renders a JSON response with the updated event" do
-          put "#{url}/#{event.id}", params: { event: new_attributes }, headers: auth_headers(organizer)
-          event.reload
-          expect(response).to be_successful
-          expect(assigns(:event)).to eq(event)
+        context "with invalid params" do
+          it "renders a JSON response with errors for the event" do
+            put "#{url}/#{event.id}", params: { event: invalid_attributes }, headers: auth_headers(organizer)
+            expect(response).to have_http_status(:unprocessable_entity)
+            expect(JSON.parse(response.body)['name']).to include('is too short (minimum is 3 characters)')
+          end
         end
       end
 
-      context "with invalid params" do
-        it "renders a JSON response with errors for the event" do
-          put "#{url}/#{event.id}", params: { event: invalid_attributes }, headers: auth_headers(organizer)
-          expect(response).to have_http_status(:unprocessable_entity)
-          expect(JSON.parse(response.body)['name']).to include('is too short (minimum is 3 characters)')
+      context 'with active event' do
+        let(:new_attributes) do
+          { place: 'Warsaw' }
+        end
+        it "forbids destroy the requested event" do
+          event
+
+          put "#{url}/#{event.id}", params: {event: new_attributes}, headers: auth_headers(organizer)
+          expect(response).to have_http_status(422)
         end
       end
     end
 
     describe "DELETE /events/:id" do
-      it "destroys the requested event" do
-        event
-        expect {
-          delete "#{url}/#{event.id}", headers: auth_headers(organizer)
-        }.to change(Event, :count).by(-1)
+      context 'with inactive event' do
+        let(:inactive_event) { create(:inactive_event) }
+        before { inactive_event }
+        it "destroys the requested event" do
+          expect {
+            delete "#{url}/#{inactive_event.id}", headers: auth_headers(inactive_event.organizer)
+          }.to change(Event, :count).by(-1)
+        end
+      end
+
+      context 'with active event' do
+        it "forbids destroy the requested event" do
+          event
+          expect {
+            delete "#{url}/#{event.id}", headers: auth_headers(organizer)
+          }.not_to change(Event, :count)
+        end
       end
     end
   end
