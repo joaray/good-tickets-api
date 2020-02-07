@@ -49,16 +49,16 @@ Payments are simulated by the adapter. To simulate successful payment, just add 
 
 # Endpoints
 
-`post /signup` with required attributes, to create an account
-`put /signup` with changed attributes, to update the account
-`delete /signup` to destroy the account
-`post /login` with required attributes, to login
-`delete /logout` to logout
-`get /events` to see all events, with query: `get /event?q[]`, e.g. searching for name containing _par_ `get /events?q[name_cont]=par`
-`get /events/1` to see the event with id 1
-`post /events` with at least required attributes as params, to create an event
-`put /events/1` with changed attributes as params, to update the event with id 1
-`delete /event/1` to destroy the event with id 1
-`get /events/1/tickets` to see all tickets of the event with id 1, if the current user is customer, he will see all his tickets
-`get /events/1/tickets/1` to see ticket with id 1
-`post /events/1/tickets` with required attributes, to create a ticket for event with id 1
+`post /signup` with required attributes, to create an account  
+`put /signup` with changed attributes, to update the account  
+`delete /signup` to destroy the account  
+`post /login` with required attributes, to login  
+`delete /logout` to logout  
+`get /events` to see all events, with query: `get /event?q[]`, e.g. searching for name containing _par_ `get /events?q[name_cont]=par`  
+`get /events/1` to see the event with id 1  
+`post /events` with at least required attributes as params, to create an event  
+`put /events/1` with changed attributes as params, to update the event with id 1  
+`delete /event/1` to destroy the event with id 1  
+`get /events/1/tickets` to see all tickets of the event with id 1, if the current user is customer, he will see all his tickets  
+`get /events/1/tickets/1` to see ticket with id 1  
+`post /events/1/tickets` with required attributes, to create a ticket for event with id 1  
