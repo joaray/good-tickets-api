@@ -1,4 +1,4 @@
-# ..:: GOOD TICKETs API ::..
+# ..:: GOOD TICKETS API ::..
 
 # What is it? :ticket:
 
@@ -61,4 +61,4 @@ Payments are simulated by the adapter. To simulate successful payment, just add 
 `delete /event/1` to destroy the event with id 1  
 `get /events/1/tickets` to see all tickets of the event with id 1, if the current user is customer, he will see all his tickets  
 `get /events/1/tickets/1` to see ticket with id 1  
-`post /events/1/tickets` with required attributes, to create a ticket for event with id 1  
+`post /events/1/tickets` with required attributes, to create a ticket for event with id 1
