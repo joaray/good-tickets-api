@@ -92,5 +92,16 @@ RSpec.describe "Ticekts", type: :request do
         end
       end
     end
+
+    context 'with unactive tickets' do
+      let(:event_with_unactive_tickets) { create(:event, ticket_start_time: Time.now + 1.day) }
+      it 'renders a JSON response with error' do
+
+        url = "/events/#{event_with_unactive_tickets.id}/tickets"
+        post url, params: {ticket: { quantity: 2, event: event_with_unactive_tickets}, token: token}, headers: auth_headers(customer)
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include('Transaction cannot be continued, aborting')
+      end
+    end
   end
 end
