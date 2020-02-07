@@ -1,4 +1,5 @@
 class EventsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_event, only: %i[show update destroy]
 
   def index
@@ -12,7 +13,7 @@ class EventsController < ApplicationController
   end
 
   def create
-    @event = Event.new(check_params)
+    @event = current_user.events.new(check_params)
 
     if @event.save
       render json: @event, status: :created, location: @event
@@ -22,7 +23,7 @@ class EventsController < ApplicationController
   end
 
   def update
-    if @event.update(check_params)
+    if authorized_user? && @event.update(check_params)
       render json: @event
     else
       render json: @event.errors, status: :unprocessable_entity
@@ -30,10 +31,14 @@ class EventsController < ApplicationController
   end
 
   def destroy
-    @event.destroy
+    @event.destroy if authorized_user?
   end
 
   private
+
+  def authorized_user?
+    current_user == @event.organizer
+  end
 
   def set_event
     @event = Event.find(params[:id])

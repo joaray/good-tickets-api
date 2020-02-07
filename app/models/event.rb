@@ -12,6 +12,7 @@ class Event < ApplicationRecord
             numericality: { greater_than_or_equal_to: :sold_ticket_quantity_or_zero }
 
   has_many :tickets
+  belongs_to :organizer, class_name: :User, foreign_key: :organizer_id
 
   def available_ticket_quantity
     max_ticket_quantity - sold_ticket_quantity

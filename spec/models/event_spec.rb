@@ -6,6 +6,12 @@ RSpec.describe Event, type: :model do
     expect(build(:event)).to be_valid
   end
 
+  it 'is invalid without an organizer' do
+    event = build(:event, organizer: nil)
+    event.valid?
+    expect(event.errors[:organizer]).to include('must exist')
+  end
+
   it 'is invalid without a name' do
     event = build(:event, name: nil)
     event.valid?
